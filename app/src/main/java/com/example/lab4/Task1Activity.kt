@@ -1,10 +1,12 @@
 package com.example.lab4
 
 import android.os.Bundle
+import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import android.widget.Button
+import android.widget.Spinner
 import androidx.activity.ComponentActivity
 
 import androidx.compose.material3.Text
@@ -25,43 +27,54 @@ class Task1Activity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_task1)
 
-        val inputAverageDayPower = findViewById<EditText>(R.id.averageDayPower)
-        val inputForecastRootMeanSquareDeviation = findViewById<EditText>(R.id.forecastRootMeanSquareDeviation)
-        val inputTargetForecastRootMeanSquareDeviation = findViewById<EditText>(R.id.targetForecastRootMeanSquareDeviation)
-        val inputElectricityPrice = findViewById<EditText>(R.id.electricityPrice)
+        val voltageSpinner = findViewById<Spinner>(R.id.enterpriseVoltage)
+        val voltageOptions = arrayOf("6 кВт", "10 кВт")
+        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, voltageOptions)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        voltageSpinner.adapter = adapter
+
+        val inputShortCircuitKiloAmperage = findViewById<EditText>(R.id.shortCircuitKiloAmperage)
+        val inputFictitiousPowerOffTime = findViewById<EditText>(R.id.fictitiousPowerOffTime)
+        val inputTransformerSubstationPower = findViewById<EditText>(R.id.transformerSubstationPower)
+        val inputCalculatedLoad = findViewById<EditText>(R.id.calculatedLoad)
+        val inputMaxLoadTime = findViewById<EditText>(R.id.maxLoadTime)
 
         val calculateButton = findViewById<Button>(R.id.calculateButton)
 
-        val moneyBalance = findViewById<TextView>(R.id.moneyBalance)
-        val newMoneyBalance = findViewById<TextView>(R.id.newMoneyBalance)
+        val minimalCableSection = findViewById<TextView>(R.id.minimalCableSection)
+        val cableSection = findViewById<TextView>(R.id.cableSection)
 
         calculateButton.setOnClickListener {
             try {
-                val allowedMistakePercentage = 5
+                val thermalCoefficient = 92
 
-                val averageDayPower = inputAverageDayPower.text.toString().toDouble()
-                val forecastRootMeanSquareDeviation = inputForecastRootMeanSquareDeviation.text.toString().toDouble()
-                val targetForecastRootMeanSquareDeviation = inputTargetForecastRootMeanSquareDeviation.text.toString().toDouble()
-                val electricityPrice = inputElectricityPrice.text.toString().toDouble()
+                val selectedVoltageText = voltageSpinner.selectedItem.toString()
+                val selectedVoltage = selectedVoltageText.split(" ")[0].toDouble()
 
-                val shareWithoutImbalancesCalculated = round(calculateShareWithoutImbalance(averageDayPower, forecastRootMeanSquareDeviation, allowedMistakePercentage.toDouble()/100)*100)/100
+                val shortCircuitKiloAmperage = inputShortCircuitKiloAmperage.text.toString().toDouble()
+                val fictitiousPowerOffTime = inputFictitiousPowerOffTime.text.toString().toDouble()
+                val transformerSubstationPower = inputTransformerSubstationPower.text.toString().toDouble()
+                val calculatedLoad = inputCalculatedLoad.text.toString().toDouble()
+                val maxLoadTime = inputMaxLoadTime.text.toString().toInt()
 
-                val profit = calculateElectricityValue(calculateElectricityQuantity(averageDayPower, shareWithoutImbalancesCalculated), electricityPrice)
-                val loss = calculateElectricityValue(calculateElectricityQuantity(averageDayPower, (1-shareWithoutImbalancesCalculated)), electricityPrice)
+                val calculatedAmperageForNormalRegime = calculateNormalRegimeAmperage(calculatedLoad, selectedVoltage)
+                val calculatedAmperageForPostAccidentRegime = calculatePostAccidentRegimeAmperage(calculatedAmperageForNormalRegime)
 
-                val initiateMoneyBalanceCalculated = profit - loss
+                // відповідно до таблиці
+                val economicalCurrentDensity = when {
+                    maxLoadTime in 1001..3000 -> 1.6
+                    maxLoadTime in 3001..5000 -> 1.4
+                    maxLoadTime > 5000 -> 1.2
+                    else -> 1.6
+                }
 
-                moneyBalance.text = "Баланс доходу/втрати, грн: %.0f".format(initiateMoneyBalanceCalculated)
+                val calculatedEconomicSection = calculateEconomicSection(calculatedAmperageForNormalRegime, economicalCurrentDensity)
+                val calculatedMinimalSection = calculateMinimalSection(shortCircuitKiloAmperage, fictitiousPowerOffTime, thermalCoefficient)
 
-                val newShareWithoutImbalancesCalculated = round(calculateShareWithoutImbalance(averageDayPower, targetForecastRootMeanSquareDeviation, allowedMistakePercentage.toDouble()/100)*100)/100
+                val chosenStandardSection = chooseStandardSection(calculatedMinimalSection)
 
-                val newProfit = calculateElectricityValue(calculateElectricityQuantity(averageDayPower, newShareWithoutImbalancesCalculated), electricityPrice)
-                val newLoss = calculateElectricityValue(calculateElectricityQuantity(averageDayPower, (1-newShareWithoutImbalancesCalculated)), electricityPrice)
-
-                val newMoneyBalanceCalculated = newProfit - newLoss
-
-                newMoneyBalance.text = "Баланс доходу/втрати, грн: %.0f".format(newMoneyBalanceCalculated)
-
+                minimalCableSection.text = "Мінімальний переріз кабеля, мм^2: %.2f".format(calculatedMinimalSection)
+                cableSection.text = "Переріз кабеля, який варто обрати, мм^2: %.2f".format(chosenStandardSection)
 
             } catch (e: Exception) {
                 Toast.makeText(this, "Будь ласка, введіть правильні числові значення!",
@@ -71,40 +84,25 @@ class Task1Activity : ComponentActivity() {
     }
 }
 
-fun calculatePd(p: Double, pC: Double, sigma1: Double): Double {
-    val exponent = -((p - pC).pow(2)) / (2 * sigma1.pow(2))
-    return (1 / (sigma1 * sqrt(2 * PI))) * exp(exponent)
+fun calculateNormalRegimeAmperage(sM: Double, uNom: Double): Double {
+    return (sM / 2) / (sqrt(3.0)*uNom)
 }
 
-fun calculateShareWithoutImbalance(pC: Double, sigma1: Double, delta: Double): Double {
-    return trapezoidalIntegral(pC, sigma1, pC-pC*delta, pC+pC*delta, 1000)
+fun calculatePostAccidentRegimeAmperage(normalRegimeAmperage: Double): Double {
+    return normalRegimeAmperage * 2
 }
 
-fun trapezoidalIntegral(
-    pC: Double,
-    sigma1: Double,
-    start: Double,
-    end: Double,
-    steps: Int
-): Double {
-    val stepSize = (end - start) / steps
-    var integral = 0.0
-    for (i in 0 until steps) {
-        val p1 = start + i * stepSize
-        val p2 = start + (i + 1) * stepSize
-        val pd1 = calculatePd(p1, pC, sigma1)
-        val pd2 = calculatePd(p2, pC, sigma1)
-        integral += (pd1 + pd2) / 2 * stepSize
-    }
-    return integral
+fun calculateEconomicSection(iM: Double, jEk: Double): Double {
+    return iM / jEk
 }
 
-fun calculateElectricityQuantity(pC: Double, deltaW: Double): Double {
-    return pC * 24 * deltaW
+fun calculateMinimalSection(iK: Double, tF: Double, cT: Int): Double {
+    return iK*1000 * sqrt(tF) / cT
 }
 
-fun calculateElectricityValue(W: Double, cost: Double): Double {
-    return W*1000 * cost
+fun chooseStandardSection(sMin: Double): Double {
+    val standardSections = listOf(10.0, 16.0, 25.0, 35.0, 50.0, 70.0, 95.0, 120.0, 150.0, 185.0, 240.0)
+    return standardSections.first { it >= sMin }
 }
 
 @Composable

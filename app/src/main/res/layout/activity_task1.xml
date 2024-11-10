@@ -6,29 +6,48 @@
     android:layout_height="match_parent"
     android:padding="16dp">
 
-    <EditText
-        android:id="@+id/averageDayPower"
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Середньодобова потужність сонячної електростанції, МВт" />
+        android:text="Оберіть напругу підприємства:"
+        android:layout_marginBottom="4dp"
+        android:layout_marginTop="4dp"/>
+
+    <Spinner
+        android:id="@+id/enterpriseVoltage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"/>
 
     <EditText
-        android:id="@+id/forecastRootMeanSquareDeviation"
+        android:id="@+id/shortCircuitKiloAmperage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Середньоквадратичне відхилення системи прогнозування, МВт" />
+        android:hint="Струм КЗ, кА" />
 
     <EditText
-        android:id="@+id/targetForecastRootMeanSquareDeviation"
+        android:id="@+id/fictitiousPowerOffTime"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Вдосконалене середньоквадратичне відхилення системи прогнозування, МВт" />
+        android:hint="Фіктивний час вимикання струму, с" />
 
     <EditText
-        android:id="@+id/electricityPrice"
+        android:id="@+id/transformerSubstationPower"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Вартість електроенергії, грн / кВт*год" />
+        android:hint="Потужність ТП, кВт*А" />
+
+    <EditText
+        android:id="@+id/calculatedLoad"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Розрахункове навантаження, кВт*А" />
+
+    <EditText
+        android:id="@+id/maxLoadTime"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Час використання максимального навантаження, год/рік" />
 
     <Button
         android:id="@+id/calculateButton"
@@ -38,33 +57,26 @@
         android:layout_marginTop="16dp"
         android:text="Розрахувати" />
 
+<!--    <TextView-->
+<!--        android:id="@+id/cable"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:text="Кабель:"-->
+<!--        android:textStyle="bold"-->
+<!--        android:paddingTop="16dp"-->
+<!--        android:textSize="16sp" />-->
+
     <TextView
-        android:id="@+id/wasTitle"
+        android:id="@+id/minimalCableSection"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Було:"
-        android:textStyle="bold"
-        android:paddingTop="16dp"
         android:textSize="16sp" />
 
     <TextView
-        android:id="@+id/moneyBalance"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
-    <TextView
-        android:id="@+id/willBeTitle"
+        android:id="@+id/cableSection"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Стало:"
-        android:textStyle="bold"
-        android:paddingTop="16dp"
         android:textSize="16sp" />
-
-    <TextView
-        android:id="@+id/newMoneyBalance"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
 
 
 </LinearLayout>
