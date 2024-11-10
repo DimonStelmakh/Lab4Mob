@@ -13,4 +13,16 @@
         android:layout_height="wrap_content"
         android:text="Калькулятор завдання 1" />
 
+    <Button
+        android:id="@+id/buttonCalculator2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Калькулятор завдання 2" />
+
+    <Button
+        android:id="@+id/buttonCalculator3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Калькулятор завдання 3" />
+
 </LinearLayout>

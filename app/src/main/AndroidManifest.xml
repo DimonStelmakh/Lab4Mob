@@ -23,7 +23,16 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".Task1Activity" />
+        <activity
+            android:name=".Task1Activity"
+            android:parentActivityName=".MainMenuActivity" />
+        <activity
+            android:name=".Task2Activity"
+            android:parentActivityName=".MainMenuActivity" />
+        <activity
+            android:name=".Task3Activity"
+            android:parentActivityName=".MainMenuActivity" />
+
     </application>
 
 </manifest>
