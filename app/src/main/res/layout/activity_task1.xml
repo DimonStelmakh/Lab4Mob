@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <EditText
+        android:id="@+id/averageDayPower"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Середньодобова потужність сонячної електростанції, МВт" />
+
+    <EditText
+        android:id="@+id/forecastRootMeanSquareDeviation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Середньоквадратичне відхилення системи прогнозування, МВт" />
+
+    <EditText
+        android:id="@+id/targetForecastRootMeanSquareDeviation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Вдосконалене середньоквадратичне відхилення системи прогнозування, МВт" />
+
+    <EditText
+        android:id="@+id/electricityPrice"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Вартість електроенергії, грн / кВт*год" />
+
+    <Button
+        android:id="@+id/calculateButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:layout_marginTop="16dp"
+        android:text="Розрахувати" />
+
+    <TextView
+        android:id="@+id/wasTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Було:"
+        android:textStyle="bold"
+        android:paddingTop="16dp"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/moneyBalance"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/willBeTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Стало:"
+        android:textStyle="bold"
+        android:paddingTop="16dp"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/newMoneyBalance"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+
+</LinearLayout>
